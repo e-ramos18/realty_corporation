@@ -1,13 +1,13 @@
-import Image from "next/image";
+import Hero from "@components/Hero";
+import FeaturedSLider from "@components/FeaturedSlider";
+import Spacer from "@components/Spacer";
 
 export default function Home() {
   return (
-    <section className="w-full flex-center flex-col">
-      <h1 className="head_text text-center">
-        <span className="gold_gradient text-center"> Golden Liberty</span>
-        <br className="max-md:hidden" />
-        Realty Corporation
-      </h1>
-    </section>
+    <>
+      <Hero />
+      <Spacer height="h-16" />
+      <FeaturedSLider />
+    </>
   );
 }
