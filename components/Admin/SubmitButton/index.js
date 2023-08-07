@@ -1,0 +1,26 @@
+import React from "react";
+import PropTypes from "prop-types";
+
+const SubmitButton = (props) => {
+  return (
+    <div>
+      <button
+        className="mt-5 flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        onClick={props.onClickHandler}
+        name={props.name}
+        id={props.id ? props.id : `${props.name}-id`}
+      >
+        {props.label}
+      </button>
+    </div>
+  );
+};
+
+SubmitButton.propTypes = {
+  onClickHandler: PropTypes.func,
+  label: PropTypes.string,
+  name: PropTypes.string.isRequired,
+  id: PropTypes.string,
+};
+
+export default SubmitButton;
