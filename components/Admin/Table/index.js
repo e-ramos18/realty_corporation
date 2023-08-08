@@ -5,6 +5,8 @@ import {
   PencilSquareIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
+import IconButton from "../IconButton";
+import SubmitButton from "../SubmitButton";
 
 const Table = (props) => {
   const { data, header, actions } = props;
@@ -23,6 +25,10 @@ const Table = (props) => {
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+  };
+
+  const onClickAdd = () => {
+    if (props.onClickHandlerAdd) props.onClickHandlerAdd();
   };
 
   return (
@@ -65,20 +71,18 @@ const Table = (props) => {
                   {actions && (
                     <td className="px-6 py-4 text-sm text-gray-500 w-200">
                       <div className="flex">
-                        <button className="ml-2" onClick={props.onHandlerClose}>
-                          <PlusCircleIcon
-                            className="block h-5 w-5"
-                            aria-hidden="true"
-                          />
-                          <PencilSquareIcon
-                            className="block h-5 w-5"
-                            aria-hidden="true"
-                          />
-                          <XCircleIcon
-                            className="block h-5 w-5"
-                            aria-hidden="true"
-                          />
-                        </button>
+                        <IconButton
+                          Icon={PencilSquareIcon}
+                          name={"edit"}
+                          onClickHandler={props.onHandlerClose}
+                          tooltip="Edit"
+                        />
+                        <IconButton
+                          Icon={XCircleIcon}
+                          name={"delete"}
+                          onClickHandler={props.onHandlerClose}
+                          tooltip="Delete"
+                        />
                       </div>
                     </td>
                   )}
@@ -88,21 +92,28 @@ const Table = (props) => {
           </tbody>
         </table>
 
-        <div className="flex justify-center mt-4">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-            (pageNumber) => (
-              <button
-                key={pageNumber}
-                onClick={() => handlePageChange(pageNumber)}
-                className={`mx-1 px-3 py-1 rounded-md ${
-                  currentPage === pageNumber
-                    ? "bg-indigo-500 text-white"
-                    : "bg-gray-200 text-gray-600"
-                }`}
-              >
-                {pageNumber}
-              </button>
-            )
+        <div className="flex justify-between">
+          <div>
+            <SubmitButton name="add" label="Add" onClickHandler={onClickAdd} />
+          </div>
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-4">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (pageNumber) => (
+                  <button
+                    key={pageNumber}
+                    onClick={() => handlePageChange(pageNumber)}
+                    className={`mx-1 px-3 py-1 rounded-md ${
+                      currentPage === pageNumber
+                        ? "bg-indigo-500 text-white"
+                        : "bg-gray-200 text-gray-600"
+                    }`}
+                  >
+                    {pageNumber}
+                  </button>
+                )
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -114,6 +125,9 @@ Table.propTypes = {
   header: PropTypes.array.isRequired,
   data: PropTypes.array.isRequired,
   actions: PropTypes.bool,
+  onClickHandlerAdd: PropTypes.func,
+  onClickHandlerEdit: PropTypes.func,
+  onClickHandlerDelete: PropTypes.func,
 };
 
 export default Table;

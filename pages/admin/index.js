@@ -1,20 +1,14 @@
 import React from "react";
-import { NavBar, Table } from "@components/Admin";
+import { NavBar, Table, UploadImage } from "@components/Admin";
+import { condominiumTableHeader } from "./constants";
 
 const Admin = () => {
-  const [currentPage, setCurrentPage] = React.useState("Dashboard");
   const [isTableShow, setIsTableShow] = React.useState(false);
   const [data, setData] = React.useState([]);
   const [tableHeader, setTableHeader] = React.useState([]);
 
   const getCondominiums = async () => {
-    setTableHeader([
-      { name: "id", label: "ID" },
-      { name: "name", label: "Name" },
-      { name: "location", label: "Location" },
-      { name: "payable_to", label: "Payable To" },
-      { name: "description", label: "Description" },
-    ]);
+    setTableHeader(condominiumTableHeader);
 
     const postData = {
       method: "GET",
@@ -29,8 +23,6 @@ const Admin = () => {
   };
 
   const onClickHandlerMenu = (currentPage) => {
-    setCurrentPage(currentPage);
-
     switch (currentPage) {
       case "Condominiums":
         getCondominiums();
@@ -47,6 +39,7 @@ const Admin = () => {
         current_page={"Dashboard"}
         onClickHandlerMenuItem={onClickHandlerMenu}
       />
+      <UploadImage name="hero-image" />
       {isTableShow && <Table header={tableHeader} data={data} actions={true} />}
     </React.Fragment>
   );
