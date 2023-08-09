@@ -8,8 +8,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        satoshi: ["Satoshi", "sans-serif"],
-        inter: ["Inter", "sans-serif"],
+        raleway: ["Raleway", "sans-serif"],
+        lato: ["Lato", "sans-serif"],
       },
       colors: {
         "primary-gold": "#FFD700",
