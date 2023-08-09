@@ -3,39 +3,41 @@ import Link from "next/link";
 
 const Nav = () => {
   return (
-    <nav className="pb-2 w-full flex justify-between items-center max-w-6xl z-20">
-      {/* Logo */}
-      <div className="flex items-center justify-between text-yellow-500">
-        <Link href="/" className=" text-2xl font-bold">
-          Golden Liberty
-        </Link>
-      </div>
+    <header className="w-full absolute z-10 bg-white">
+      <nav className="max-width flex-between padding-x padding-y bg-transparent">
+        {/* Logo */}
+        <div className="flex-center text-yellow-400">
+          <Link href="/" className="text-lg font-bold uppercase">
+            Golden Liberty
+          </Link>
+        </div>
 
-      {/* Categories */}
-      <div className="flex justify-center mt-4 space-x-1">
-        <CategoryItem title="House" />
-        <CategoryItem title="Condo" />
-        <CategoryItem title="AirBnb" />
-        <CategoryItem title="Realty" />
-      </div>
+        {/* Categories */}
+        <div className="flex justify-center mt-4 space-x-1">
+          <CategoryItem title="House" />
+          <CategoryItem title="Condo" />
+          <CategoryItem title="AirBnb" />
+          <CategoryItem title="Realty" />
+        </div>
 
-      {/* Social Media Icons */}
-      <div className="flex justify-center mt-4 space-x-4">
-        <SiFacebook size="20px" />
-        <SiInstagram size="20px" />
-        {/* Add more social media icons here */}
-      </div>
-    </nav>
+        {/* Social Media Icons */}
+        <div className="flex justify-center mt-4 space-x-4">
+          <SiFacebook size="20px" />
+          <SiInstagram size="20px" />
+          {/* Add more social media icons here */}
+        </div>
+      </nav>
+    </header>
   );
 };
 
 const CategoryItem = ({ title }) => {
   return (
     <div className="relative group">
-      <button className="border-b-2 border-transparent hover:border-yellow-500 hover:text-yellow-500 cursor-pointer py-3 px-10 uppercase">
+      <button className="border-b-2 border-transparent hover:border-yellow-500 hover:text-yellow-500 cursor-pointer py-3 px-10 uppercase font-semibold text-sm">
         {title}
       </button>
-      <div className="absolute hidden group-hover:block bg-white p-2 rounded mt-1">
+      <div className="absolute hidden group-hover:block bg-white p-2 mt-1 w-full">
         {/* Dropdown items */}
         <Link href="#" className="block p-2 hover:text-yellow-500">
           Item 1

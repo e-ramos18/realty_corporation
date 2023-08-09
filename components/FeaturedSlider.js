@@ -8,8 +8,10 @@ import Card from "./Card";
 export default function FeaturedSlider() {
   const cards = Array.from({ length: 10 }, (_, index) => ({
     imgSrc: `https://source.unsplash.com/random/200x200?sig=${index}`,
-    title: `Card Title ${index + 1}`,
-    description: `Card ${index + 1} description...`,
+    title: `The Arton ${index + 1}`,
+    description: `Card ${
+      index + 1
+    } A community designed to inspire curious minds nestled in an vibrant neighborhood in Katipunan, Quezon City.`,
     href: `/details/${index + 1}`,
   }));
 
@@ -18,17 +20,21 @@ export default function FeaturedSlider() {
       interval={5000}
       centerMode
       emulateTouch
-      centerSlidePercentage={25} // adjust this based on the size of your cards and viewport
-      className="max-w-6xl"
+      centerSlidePercentage={26} // adjust this based on the size of your cards and viewport
+      className="max-width"
+      showThumbs={false}
+      showArrows
     >
-      {cards.map((card, index) => (
-        <div className="mr-2">
+      {cards.map((card) => (
+        <div className="w-64" key={card.title}>
           <Card
-            key={index}
             imgSrc={card.imgSrc}
             title={card.title}
             description={card.description}
             href={card.href}
+            bgColor="bg-white"
+            shadow="shadow-md"
+            btnTitle="View Details"
           />
         </div>
       ))}
