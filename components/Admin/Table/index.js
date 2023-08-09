@@ -34,7 +34,7 @@ const Table = (props) => {
   return (
     <React.Fragment>
       <div className="container mx-auto p-4">
-        <table className="min-w-full divide-y divide-gray-200">
+        <table className="min-w-full divide-y divide-gray-200 shadow-lg">
           <thead className="bg-gray-50">
             <tr>
               {header.map((item, index) => {

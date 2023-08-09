@@ -1,5 +1,5 @@
 import React from "react";
-import { NavBar, Table, UploadImage } from "@components/Admin";
+import { ImageCard, NavBar, Table, UploadImage } from "@components/Admin";
 import { condominiumTableHeader } from "./constants";
 
 const Admin = () => {
@@ -39,6 +39,7 @@ const Admin = () => {
         current_page={"Dashboard"}
         onClickHandlerMenuItem={onClickHandlerMenu}
       />
+      {/* <ImageCard source={"/logo/logo.jpeg"} /> */}
       <UploadImage name="hero-image" />
       {isTableShow && <Table header={tableHeader} data={data} actions={true} />}
     </React.Fragment>

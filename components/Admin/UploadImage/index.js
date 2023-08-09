@@ -39,7 +39,7 @@ const UploadImage = (props) => {
 
   return (
     <React.Fragment>
-      <div className="flex flex-col items-center mt-4">
+      <div className="flex items-center mt-4 ml-4">
         <InputText
           name={"file-image-hero"}
           label={"Hero Page Image"}
@@ -47,7 +47,7 @@ const UploadImage = (props) => {
           type={"file"}
         />
         {selectedImage && (
-          <div>
+          <div className="ml-4 mt-3">
             {/* <img src={uploadedImage} alt="Uploaded" className="w-32 h-32" /> */}
             <SubmitButton
               name={"upload-image-hero"}
