@@ -3,6 +3,7 @@ import Image from "next/image";
 import "@/styles/globals.css";
 import { InputText, SnackBar, SubmitButton } from "@components/Admin";
 import axios from "axios";
+import { setCookie } from "nookies";
 
 export default function Login() {
   const [formData, setFormData] = React.useState({ uname: "", pword: "" });
@@ -21,6 +22,8 @@ export default function Login() {
     const data = response.data;
 
     if (data.response.status === "success") {
+      console.log(data.response.token);
+      setCookie(null, "GRCT", data.response.token, { maxAge: 600, path: "/" });
       window.location.assign("/admin");
     } else {
       setAlert({ message: data.response.message, isShow: true });

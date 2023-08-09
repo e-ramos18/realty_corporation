@@ -37,10 +37,10 @@ const Table = (props) => {
         <table className="min-w-full divide-y divide-gray-200 shadow-lg">
           <thead className="bg-gray-50">
             <tr>
-              {header.map((item, index) => {
+              {header.map((item) => {
                 return (
                   <th
-                    key={`key-${index}`}
+                    key={`key-${item.label}`}
                     className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider "
                   >
                     {item.label}
@@ -58,30 +58,32 @@ const Table = (props) => {
             {currentItems.map((currentItem) => {
               return (
                 <tr key={currentItem.id}>
-                  {header.map((item, index) => {
+                  {header.map((item) => {
                     return (
                       <td
-                        key={`key-${index}`}
-                        className="px-6 py-4 text-sm text-gray-500"
+                        key={`key-${currentItem.id}-${item.name}`}
+                        className={`px-6 py-4 text-sm text-gray-500 ${item.style}`}
                       >
                         {currentItem[item.name]}
                       </td>
                     );
                   })}
                   {actions && (
-                    <td className="px-6 py-4 text-sm text-gray-500 w-200">
-                      <div className="flex">
+                    <td className="px-6 py-4">
+                      <div className="flex justify-center">
                         <IconButton
                           Icon={PencilSquareIcon}
                           name={"edit"}
                           onClickHandler={props.onHandlerClose}
                           tooltip="Edit"
+                          iconStyle="text-primary-info"
                         />
                         <IconButton
                           Icon={XCircleIcon}
                           name={"delete"}
                           onClickHandler={props.onHandlerClose}
                           tooltip="Delete"
+                          iconStyle="text-primary-error"
                         />
                       </div>
                     </td>

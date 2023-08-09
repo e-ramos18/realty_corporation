@@ -1,4 +1,5 @@
 import { query } from "@config/db";
+import jwt from "jsonwebtoken";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -11,8 +12,14 @@ export default async function handler(req, res) {
     });
 
     if (users.length > 0) {
+      const secretKey = process.env.SECRET_KEY;
       res.status(200).json({
-        response: { status: "success", message: "Data found.", data: users },
+        response: {
+          status: "success",
+          message: "Data found.",
+          data: users,
+          token: jwt.sign({ username: uname, admin: true }, secretKey),
+        },
       });
     } else {
       res.status(200).json({

@@ -7,6 +7,7 @@ import {
   XMarkIcon,
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
+import { destroyCookie, parseCookies } from "nookies";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -37,8 +38,15 @@ const AdminNav = (props) => {
   };
 
   const onClickHandlerLogout = () => {
+    destroyCookie(null, "GRCT");
     window.location.assign("/login");
   };
+
+  React.useEffect(() => {
+    const cookies = parseCookies();
+    console.log(cookies);
+    if (!cookies.GRCT) window.location.assign("/login");
+  });
 
   return (
     <Disclosure as="nav" className="bg-primary-gold shadow-lg">
