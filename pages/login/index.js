@@ -2,6 +2,8 @@ import React from "react";
 import Image from "next/image";
 import "@/styles/globals.css";
 import { InputText, SnackBar, SubmitButton } from "@components/Admin";
+import axios from "axios";
+import { setCookie } from "nookies";
 
 export default function Login() {
   const [formData, setFormData] = React.useState({ uname: "", pword: "" });
@@ -16,20 +18,12 @@ export default function Login() {
   };
 
   const onClickHandler = async () => {
-    const postData = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        uname: formData.uname,
-        pword: formData.pword,
-      }),
-    };
+    const response = await axios.post("/api/login", formData);
+    const data = response.data;
 
-    const res = await fetch(`/api/login`, postData);
-    const data = await res.json();
     if (data.response.status === "success") {
+      console.log(data.response.token);
+      setCookie(null, "GRCT", data.response.token, { maxAge: 600, path: "/" });
       window.location.assign("/admin");
     } else {
       setAlert({ message: data.response.message, isShow: true });
@@ -47,7 +41,7 @@ export default function Login() {
           <Image
             src={"/logo/logo.jpg"}
             alt={"Golden Realty Corporation"}
-            className="mx-auto h-20 w-auto"
+            className="mx-auto h-20 w-auto shadow-lg rounded-md border-2 border-primary-gold"
             width={200}
             height={200}
           />

@@ -12,7 +12,10 @@ const IconButton = (props) => {
         id={props.id ? props.id : `${props.name}-id`}
         title={props.tooltip}
       >
-        <IconComponent className="block h-5 w-5" aria-hidden="true" />
+        <IconComponent
+          className={`block h-5 w-5 ${props.iconStyle}`}
+          aria-hidden="true"
+        />
       </a>
     </div>
   );
@@ -24,6 +27,7 @@ IconButton.propTypes = {
   id: PropTypes.string,
   Icon: PropTypes.any.isRequired,
   tooltip: PropTypes.string,
+  iconStyle: PropTypes.string,
 };
 
 export default IconButton;

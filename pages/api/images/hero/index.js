@@ -13,7 +13,7 @@ const dateNow = Date.now();
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(process.cwd(), "public", "uploads"));
+    cb(null, path.join(process.cwd(), "public", "uploads", "hero"));
   },
   filename: function (req, file, cb) {
     cb(null, dateNow + "-" + path.basename(file.originalname));

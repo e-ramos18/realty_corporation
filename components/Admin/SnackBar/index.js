@@ -6,20 +6,21 @@ const SnackBar = (props) => {
   let styleBg = "bg-red-500";
   switch (props.status) {
     case "success":
-      styleBg = "bg-green-800";
+      styleBg = "bg-primary-success";
       break;
     case "info":
-      styleBg = "bg-blue-500";
+      styleBg = "bg-primary-info";
       break;
     case "warning":
-      styleBg = "bg-yellow-500";
+      styleBg = "bg-primary-warning";
       break;
   }
+
   return (
     <React.Fragment>
       {props.isShow && (
         <div
-          className={`fixed top-0 right-0 m-2 ${styleBg} text-white px-4 py-2 rounded shadow `}
+          className={`fixed top-0 right-0 m-2 ${styleBg} text-white px-4 py-2 rounded shadow-lg`}
         >
           <div className="flex ">
             <div>{props.message}</div>
