@@ -3,7 +3,8 @@ import { query } from "@config/db";
 export default async function handler(req, res) {
   if (req.method === "GET") {
     const condominiums = await query({
-      query: "SELECT * FROM `condominiums` WHERE `statid` = 1",
+      query:
+        "SELECT a.*,b.name as `payables_name` FROM `condominiums` as a LEFT JOIN `payables` as b ON a.`payable_to` = b.`id` WHERE a.`statid` = 1 ",
       values: [],
     });
 
@@ -22,11 +23,17 @@ export default async function handler(req, res) {
         values: [name, location, payable_to, description],
       });
 
+      const condominium = await query({
+        query:
+          "SELECT a.*,b.name as `payables_name` FROM `condominiums` as a LEFT JOIN `payables` as b ON a.`payable_to` = b.`id` WHERE a.id = ?",
+        values: [newCondominium.insertId],
+      });
+
       res.status(200).json({
         response: {
           status: "success",
           message: "Successfully added.",
-          data: newCondominium,
+          data: condominium[0],
         },
       });
     } catch (error) {

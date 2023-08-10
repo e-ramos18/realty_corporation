@@ -6,3 +6,7 @@ export { default as Table } from "./Table";
 export { default as IconButton } from "./IconButton";
 export { default as UploadImage } from "./UploadImage";
 export { default as ImageCard } from "./ImageCard";
+export { default as CardCarousel } from "./CardCarousel";
+export { default as Alert } from "./Alert";
+export { default as ConfirmDialogBox } from "./ConfirmDialogBox";
+export { default as SelectInput } from "./SelectInput";

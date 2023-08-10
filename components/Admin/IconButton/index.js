@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 const IconButton = (props) => {
   const IconComponent = props.Icon;
   return (
-    <div className="relative inline-block">
+    <div className={`relative inline-block ${props.rootStyle}`}>
       <a
         href="#"
         onClick={props.onClickHandler}
@@ -28,6 +28,7 @@ IconButton.propTypes = {
   Icon: PropTypes.any.isRequired,
   tooltip: PropTypes.string,
   iconStyle: PropTypes.string,
+  rootStyle: PropTypes.string,
 };
 
 export default IconButton;

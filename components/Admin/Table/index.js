@@ -1,23 +1,35 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {
-  PlusCircleIcon,
-  PencilSquareIcon,
-  XCircleIcon,
-} from "@heroicons/react/24/outline";
+import { PencilSquareIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import IconButton from "../IconButton";
 import SubmitButton from "../SubmitButton";
+import FormCondominium from "@pages/admin/forms/FormCondominium";
+import ConfirmDialogBox from "../ConfirmDialogBox";
+
+const defaultFormData = {
+  name: "",
+  location: "",
+  payable_to: "",
+  description: "",
+};
 
 const Table = (props) => {
   const { data, header, actions } = props;
   const [currentItems, setCurrentItems] = React.useState([]);
   const [currentPage, setCurrentPage] = React.useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const [totalPages, setTotalPages] = React.useState(1);
+  const [isShowForm, setIsShowForm] = React.useState(false);
+  const [isShowConfirmDialog, setIsShowConfirmDialog] = React.useState(false);
+  const [selectedId, setSelectedId] = React.useState(null);
+  const [isFormEdit, setIsFormEdit] = React.useState(false);
+  const [formData, setFormData] = React.useState(defaultFormData);
 
   React.useEffect(() => {
+    if (!data.length) return;
+
     setTotalPages(Math.ceil(data.length / itemsPerPage));
     const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
     setCurrentItems(currentItems);
@@ -28,7 +40,51 @@ const Table = (props) => {
   };
 
   const onClickAdd = () => {
-    if (props.onClickHandlerAdd) props.onClickHandlerAdd();
+    setIsShowForm(true);
+    setFormData(defaultFormData);
+    setIsFormEdit(false);
+  };
+
+  const onCloseHandler = () => {
+    setIsShowForm(false);
+  };
+
+  const onSubmitSuccessAddItem = (addedItem) => {
+    setCurrentItems((prevItems) => {
+      prevItems.push(addedItem);
+      return prevItems;
+    });
+  };
+
+  const onSubmitSuccessSaveItem = (addedItem) => {
+    let updatedItems = [];
+    currentItems.forEach((item) => {
+      const newItem = item.id === addedItem.id ? addedItem : item;
+      updatedItems.push(newItem);
+    });
+    setCurrentItems(updatedItems);
+  };
+
+  const onClickHandleDeleteIcon = (id) => {
+    setIsShowConfirmDialog(true);
+    setSelectedId(id);
+  };
+
+  const onClickHandleConfirmDelete = () => {
+    props.onClickHandlerDelete(selectedId);
+    setIsShowConfirmDialog(false);
+  };
+
+  const onClickHandleEditIcon = (selectedItem) => {
+    setIsFormEdit(true);
+    setFormData({
+      id: selectedItem.id,
+      name: selectedItem.name,
+      location: selectedItem.location,
+      payable_to: selectedItem.payable_to,
+      description: selectedItem.description,
+    });
+    setIsShowForm(true);
   };
 
   return (
@@ -41,14 +97,14 @@ const Table = (props) => {
                 return (
                   <th
                     key={`key-${item.label}`}
-                    className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider "
+                    className="px-6 py-3 text-center text-xs font-medium text-gray-800 uppercase tracking-wider "
                   >
                     {item.label}
                   </th>
                 );
               })}
               {actions && (
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider ">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-800 uppercase tracking-wider ">
                   {"ACTIONS"}
                 </th>
               )}
@@ -62,7 +118,7 @@ const Table = (props) => {
                     return (
                       <td
                         key={`key-${currentItem.id}-${item.name}`}
-                        className={`px-6 py-4 text-sm text-gray-500 ${item.style}`}
+                        className={`px-2 py-2 text-xs text-gray-500 align-top ${item.style}`}
                       >
                         {currentItem[item.name]}
                       </td>
@@ -73,15 +129,19 @@ const Table = (props) => {
                       <div className="flex justify-center">
                         <IconButton
                           Icon={PencilSquareIcon}
-                          name={"edit"}
-                          onClickHandler={props.onHandlerClose}
+                          name={`edit-${currentItem.id}`}
+                          onClickHandler={() =>
+                            onClickHandleEditIcon(currentItem)
+                          }
                           tooltip="Edit"
                           iconStyle="text-primary-info"
                         />
                         <IconButton
                           Icon={XCircleIcon}
-                          name={"delete"}
-                          onClickHandler={props.onHandlerClose}
+                          name={`delete-${currentItem.id}`}
+                          onClickHandler={() =>
+                            onClickHandleDeleteIcon(currentItem.id)
+                          }
                           tooltip="Delete"
                           iconStyle="text-primary-error"
                         />
@@ -119,6 +179,22 @@ const Table = (props) => {
           )}
         </div>
       </div>
+      <FormCondominium
+        open={isShowForm}
+        onCloseHandler={onCloseHandler}
+        onSubmitSuccessAddItem={onSubmitSuccessAddItem}
+        onSubmitSuccessSaveItem={onSubmitSuccessSaveItem}
+        isFormEdit={isFormEdit}
+        formData={formData}
+      />
+      <ConfirmDialogBox
+        title={"Delete Item"}
+        description="Are you sure you want to delete this item?"
+        onCloseHandler={() => setIsShowConfirmDialog(false)}
+        onClickHandlerConfirmYes={onClickHandleConfirmDelete}
+        onClickHandlerConfirmNo={() => setIsShowConfirmDialog(false)}
+        isShow={isShowConfirmDialog}
+      />
     </React.Fragment>
   );
 };
@@ -127,7 +203,6 @@ Table.propTypes = {
   header: PropTypes.array.isRequired,
   data: PropTypes.array.isRequired,
   actions: PropTypes.bool,
-  onClickHandlerAdd: PropTypes.func,
   onClickHandlerEdit: PropTypes.func,
   onClickHandlerDelete: PropTypes.func,
 };

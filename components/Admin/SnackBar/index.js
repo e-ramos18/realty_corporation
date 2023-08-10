@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 const SnackBar = (props) => {
-  let styleBg = "bg-red-500";
+  let styleBg = "bg-primary-error";
   switch (props.status) {
     case "success":
       styleBg = "bg-primary-success";
