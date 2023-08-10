@@ -22,8 +22,7 @@ export default function Login() {
     const data = response.data;
 
     if (data.response.status === "success") {
-      console.log(data.response.token);
-      setCookie(null, "GRCT", data.response.token, { maxAge: 600, path: "/" });
+      setCookie(null, "GRCT", data.response.token, { maxAge: 3600, path: "/" });
       window.location.assign("/admin");
     } else {
       setAlert({ message: data.response.message, isShow: true });

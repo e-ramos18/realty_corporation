@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     });
 
     res.status(200).json({
-      response: { status: "success", payables: payables },
+      response: { status: "success", data: payables },
     });
   }
 }

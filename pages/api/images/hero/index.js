@@ -35,7 +35,7 @@ const handler = nc({
     try {
       const heroImage = await query({
         query:
-          "INSERT INTO `images` (`directory`,`directoryId`,`location`,`filename`) VALUES ('hero',1,'public/uploads/hero/',?)",
+          "INSERT INTO `images` (`directory`,`directoryId`,`location`,`filename`) VALUES ('hero',1,'/uploads/hero/',?)",
         values: [filename],
       });
 
