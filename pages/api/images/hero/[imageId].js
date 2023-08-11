@@ -35,7 +35,6 @@ export default async function handler(req, res) {
         });
 
         try {
-          console.log(imagePath);
           fs.unlinkSync(imagePath);
         } catch (error) {
           res.status(200).json({

@@ -7,7 +7,7 @@ import IconButton from "../IconButton";
 const ImageCard = (props) => {
   return (
     <React.Fragment>
-      <div className="relative h-56 w-56">
+      <div className={`relative ${props.rootStyle}`}>
         <Image
           src={props.source}
           alt={props.title ? props.title : `alt-${props.source}`}
@@ -39,6 +39,7 @@ ImageCard.propTypes = {
   title: PropTypes.string,
   hasDelete: PropTypes.bool,
   onClickHandlerDelete: PropTypes.func,
+  rootStyle: PropTypes.string,
 };
 
 export default ImageCard;

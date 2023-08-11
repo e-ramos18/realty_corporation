@@ -5,13 +5,7 @@ import IconButton from "../IconButton";
 import SubmitButton from "../SubmitButton";
 import FormCondominium from "@pages/admin/forms/FormCondominium";
 import ConfirmDialogBox from "../ConfirmDialogBox";
-
-const defaultFormData = {
-  name: "",
-  location: "",
-  payable_to: "",
-  description: "",
-};
+import { formDataCondominium } from "@pages/admin/constants";
 
 const Table = (props) => {
   const { data, header, actions } = props;
@@ -25,7 +19,7 @@ const Table = (props) => {
   const [isShowConfirmDialog, setIsShowConfirmDialog] = React.useState(false);
   const [selectedId, setSelectedId] = React.useState(null);
   const [isFormEdit, setIsFormEdit] = React.useState(false);
-  const [formData, setFormData] = React.useState(defaultFormData);
+  const [formData, setFormData] = React.useState(formDataCondominium);
 
   React.useEffect(() => {
     if (!data.length) return;
@@ -41,7 +35,7 @@ const Table = (props) => {
 
   const onClickAdd = () => {
     setIsShowForm(true);
-    setFormData(defaultFormData);
+    setFormData(formDataCondominium);
     setIsFormEdit(false);
   };
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { NavBar, SnackBar, Table } from "@components/Admin";
+import { NavBar, SnackBar, Stepper, Table } from "@components/Admin";
 import { alertDefaultData, condominiumTableHeader } from "./constants";
 import axios from "axios";
 import Dashboard from "./forms/Dashboard";
@@ -68,7 +68,6 @@ const Admin = () => {
         onClickHandlerMenuItem={onClickHandlerMenu}
       />
       {isShowDashboard && <Dashboard />}
-
       {isShowTable && (
         <Table
           header={tableHeader}

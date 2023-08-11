@@ -44,7 +44,6 @@ const AdminNav = (props) => {
 
   React.useEffect(() => {
     const cookies = parseCookies();
-    console.log(cookies);
     if (!cookies.GRCT) window.location.assign("/login");
   });
 

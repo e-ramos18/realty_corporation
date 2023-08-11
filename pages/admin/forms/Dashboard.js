@@ -9,7 +9,8 @@ import { deleteHeroImages, getHeroImages, postHeroImages } from "../apiCalls";
 
 const Dashboard = () => {
   const [heroImages, setHeroImages] = React.useState([]);
-  const [selectedImage, setSelectedImage] = React.useState(null);
+  const [selectedImage, setSelectedImage] = React.useState("");
+  const [formData, setFormData] = React.useState({ hero_image: "" });
   const [alert, setAlert] = React.useState({ message: "", isShow: false });
   const [refreshList, setRefreshList] = React.useState(null);
 
@@ -20,9 +21,12 @@ const Dashboard = () => {
   }, [refreshList]);
 
   const onChangeHandler = (event) => {
-    const { files } = event.target;
+    const { files, name, value } = event.target;
     const file = files[0];
     setSelectedImage(file);
+    setFormData((prevData) => {
+      return { ...prevData, [name]: value };
+    });
   };
 
   const onClickHandlerUpload = () => {
@@ -43,6 +47,7 @@ const Dashboard = () => {
         if (data.response.status === "success") {
           setRefreshList(data.response.data);
           setSelectedImage(null);
+          setFormData({ hero_image: "" });
           setAlert({
             message: "File uploaded.",
             isShow: true,
@@ -80,10 +85,11 @@ const Dashboard = () => {
     <React.Fragment>
       <div className="flex items-end mt-4 ml-5">
         <InputText
-          name={"upload-image-hero"}
+          name={"hero_image"}
           label={"Hero Page Image"}
           onChangeHandler={onChangeHandler}
           type={"file"}
+          value={formData.hero_image}
         />
         <SubmitButton
           name={"upload-image"}

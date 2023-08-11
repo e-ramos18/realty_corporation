@@ -2,6 +2,7 @@ import multer from "multer";
 import path from "path";
 import nc from "next-connect";
 import { query } from "@config/db";
+import fs from "fs";
 
 export const config = {
   api: {
@@ -31,44 +32,54 @@ const handler = nc({
   },
 })
   .use(upload.single("main_image_file"))
-  .post(async (req, res) => {
+  .patch(async (req, res) => {
+    const { condominiumId } = req.query;
     const { name, main_description } = req.body;
     const filename = path.basename(req.file.filename);
     try {
       const condominium = await query({
+        query: "SELECT * FROM `condominiums` WHERE `id` = ?",
+        values: [condominiumId],
+      });
+
+      if (condominium[0].main_filename) {
+        const imagePath = path.join(
+          process.cwd(),
+          "public",
+          "uploads",
+          "condominium",
+          "main",
+          condominium[0].main_filename
+        );
+
+        try {
+          fs.unlinkSync(imagePath);
+        } catch (error) {
+          res.status(200).json({
+            response: {
+              status: "error",
+              message: `Error in deleting the file. ${imagePath} -`,
+            },
+          });
+        }
+      }
+
+      const updateCondominium = await query({
         query:
-          "INSERT INTO `condominiums` (`name`,`main_description`,`main_filename`,`main_directory`,`statid`) " +
-          "VALUES (?,?,?,'/uploads/condominium/main/',6)",
-        values: [name, main_description, filename],
+          "UPDATE `condominiums` SET `name` = ?,`main_description` = ?,`main_filename` = ?,`main_directory` = '/uploads/condominium/main/' WHERE `id` = ?",
+        values: [name, main_description, filename, condominiumId],
       });
 
       res.status(200).json({
         response: {
           status: "success",
-          message: "Successfully created.",
-          data: condominium,
+          message: "Successfully updated.",
+          data: updateCondominium,
         },
       });
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: "Error creating data." });
-    }
-  })
-  .get(async (req, res) => {
-    try {
-      const condominiums = await query({
-        query: "SELECT * FROM `condominiums` WHERE `statid` = 1",
-        values: [],
-      });
-      res.status(200).json({
-        response: {
-          status: "success",
-          message: "Data found.",
-          data: condominiums,
-        },
-      });
-    } catch (error) {
-      res.status(500).json({ message: "System error." });
     }
   });
 
