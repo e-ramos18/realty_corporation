@@ -1,8 +1,11 @@
 import React from "react";
 import { NavBar, SnackBar, Stepper, Table } from "@components/Admin";
-import { alertDefaultData, condominiumTableHeader } from "./constants";
+import {
+  alertDefaultData,
+  condominiumTableHeader,
+} from "../../utils/constants";
 import axios from "axios";
-import Dashboard from "./forms/Dashboard";
+import Dashboard from "../../forms/Dashboard";
 
 const Admin = () => {
   const [isShowTable, setIsShowTable] = React.useState(false);

@@ -5,7 +5,11 @@ import {
   SnackBar,
   SubmitButton,
 } from "@components/Admin";
-import { deleteHeroImages, getHeroImages, postHeroImages } from "../apiCalls";
+import {
+  deleteHeroImages,
+  getHeroImages,
+  postHeroImages,
+} from "../utils/apiCalls";
 
 const Dashboard = () => {
   const [heroImages, setHeroImages] = React.useState([]);

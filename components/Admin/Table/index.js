@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 import { PencilSquareIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import IconButton from "../IconButton";
 import SubmitButton from "../SubmitButton";
-import FormCondominium from "@pages/admin/forms/FormCondominium";
+import FormCondominium from "@forms/FormCondominium";
 import ConfirmDialogBox from "../ConfirmDialogBox";
-import { formDataCondominium } from "@pages/admin/constants";
+import { formDataCondominium } from "@utils/constants";
 
 const Table = (props) => {
   const { data, header, actions } = props;

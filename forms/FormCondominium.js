@@ -9,14 +9,14 @@ import {
 } from "@components/Admin";
 import axios from "axios";
 import { Dialog, Transition } from "@headlessui/react";
-import { alertDefaultData } from "../constants";
+import { alertDefaultData } from "../utils/constants";
 import {
   patchCondominiums,
   patchCondominiumsStep2,
   patchCondominiumsStep3,
   patchCondominiumsStep4,
   postCondominiums,
-} from "../apiCalls";
+} from "../utils/apiCalls";
 
 const FormCondominium = (props) => {
   const [formData, setFormData] = React.useState(props.formData);
