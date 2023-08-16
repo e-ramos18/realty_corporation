@@ -11,6 +11,7 @@
   "dependencies": {
     "@headlessui/react": "^1.7.16",
     "@heroicons/react": "^2.0.18",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@types/prop-types": "^15.7.5",
     "autoprefixer": "^10.4.14",
     "axios": "^1.4.0",

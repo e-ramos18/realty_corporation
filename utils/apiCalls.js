@@ -15,6 +15,11 @@ export const deleteHeroImages = async (formData) => {
   return response.data;
 };
 
+export const getCondominiums = async () => {
+  const response = await axios.get("/api/condominiums");
+  return response.data;
+};
+
 export const postCondominiums = async (formData) => {
   const response = await axios.post("/api/condominiums", formData);
   return response.data;

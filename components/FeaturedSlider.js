@@ -5,16 +5,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import Card from "./Card";
 
-export default function FeaturedSlider() {
-  const cards = Array.from({ length: 10 }, (_, index) => ({
-    imgSrc: `https://source.unsplash.com/random/200x200?sig=${index}`,
-    title: `The Arton ${index + 1}`,
-    description: `Card ${
-      index + 1
-    } A community designed to inspire curious minds nestled in an vibrant neighborhood in Katipunan, Quezon City.`,
-    href: `/details/${index + 1}`,
-  }));
-
+export default function FeaturedSlider({ condos, setCondo }) {
   return (
     <Carousel
       interval={5000}
@@ -25,19 +16,20 @@ export default function FeaturedSlider() {
       showThumbs={false}
       showArrows
     >
-      {cards.map((card) => (
-        <div className="w-64" key={card.title}>
-          <Card
-            imgSrc={card.imgSrc}
-            title={card.title}
-            description={card.description}
-            href={card.href}
-            bgColor="bg-white"
-            shadow="shadow-md"
-            btnTitle="View Details"
-          />
-        </div>
-      ))}
+      {condos.length &&
+        condos.map((condo) => (
+          <div className="w-64" key={condo.name}>
+            <Card
+              imgSrc={`${condo.main_directory}${condo.main_filename}`}
+              title={condo.name}
+              description={condo.main_description}
+              bgColor="bg-white"
+              shadow="shadow-md"
+              btnTitle="View Details"
+              onBtnClick={() => setCondo(condo)}
+            />
+          </div>
+        ))}
     </Carousel>
   );
 }
