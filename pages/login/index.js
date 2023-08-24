@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import "@/styles/globals.css";
 import { InputText, SnackBar, SubmitButton } from "@components/Admin";
 import axios from "axios";
 import { setCookie } from "nookies";

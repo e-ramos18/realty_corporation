@@ -1,11 +1,12 @@
 import React from "react";
-import { NavBar, SnackBar, Stepper, Table } from "@components/Admin";
+import { NavBar, SnackBar, Table } from "@components/Admin";
 import {
   alertDefaultData,
   condominiumTableHeader,
 } from "../../utils/constants";
 import axios from "axios";
 import Dashboard from "../../forms/Dashboard";
+import { getAllCondominiums } from "@utils/apiCalls";
 
 const Admin = () => {
   const [isShowTable, setIsShowTable] = React.useState(false);
@@ -15,15 +16,6 @@ const Admin = () => {
   const [alert, setAlert] = React.useState(alertDefaultData);
   const [currentPage, setCurrentPage] = React.useState("Dashboard");
 
-  const getCondominiums = async () => {
-    setTableHeader(condominiumTableHeader);
-
-    const response = await axios.get("/api/condominiums");
-    const data = response.data;
-
-    setData(data.response.data);
-  };
-
   const onClickHandlerMenu = (currentPage) => {
     setCurrentPage(currentPage);
     switch (currentPage) {
@@ -32,9 +24,12 @@ const Admin = () => {
         setIsShowDashboard(true);
         break;
       case "Condominiums":
-        getCondominiums();
+        getAllCondominiums().then((data) => {
+          setData(data.response.data);
+        });
         setIsShowTable(true);
         setIsShowDashboard(false);
+        setTableHeader(condominiumTableHeader);
         break;
       default:
         setIsShowTable(false);
@@ -48,7 +43,6 @@ const Admin = () => {
         const response = await axios.delete(`/api/condominiums/${id}`);
         const data = response.data;
         if (data.response.status === "success") {
-          console.log(id, currentPage);
           setAlert({
             message: data.response.message,
             isShow: true,

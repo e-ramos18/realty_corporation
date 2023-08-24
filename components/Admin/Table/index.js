@@ -6,6 +6,7 @@ import SubmitButton from "../SubmitButton";
 import FormCondominium from "@forms/FormCondominium";
 import ConfirmDialogBox from "../ConfirmDialogBox";
 import { formDataCondominium } from "@utils/constants";
+import { getCondominium } from "@utils/apiCalls";
 
 const Table = (props) => {
   const { data, header, actions } = props;
@@ -71,12 +72,9 @@ const Table = (props) => {
 
   const onClickHandleEditIcon = (selectedItem) => {
     setIsFormEdit(true);
-    setFormData({
-      id: selectedItem.id,
-      name: selectedItem.name,
-      location: selectedItem.location,
-      payable_to: selectedItem.payable_to,
-      description: selectedItem.description,
+    getCondominium(selectedItem.id).then((data) => {
+      const condominium = data.response.data[0];
+      setFormData(condominium);
     });
     setIsShowForm(true);
   };
@@ -107,7 +105,10 @@ const Table = (props) => {
           <tbody className="bg-white divide-y divide-gray-200">
             {currentItems.map((currentItem) => {
               return (
-                <tr key={currentItem.id}>
+                <tr
+                  key={currentItem.id}
+                  className={currentItem.statid === 6 && "bg-red-200"}
+                >
                   {header.map((item) => {
                     return (
                       <td

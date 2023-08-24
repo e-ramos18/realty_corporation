@@ -35,14 +35,18 @@ const handler = nc({
   .patch(async (req, res) => {
     const { condominiumId } = req.query;
     const { name, main_description } = req.body;
-    const filename = path.basename(req.file.filename);
+
     try {
       const condominium = await query({
         query: "SELECT * FROM `condominiums` WHERE `id` = ?",
         values: [condominiumId],
       });
 
-      if (condominium[0].main_filename) {
+      const filename = req.file
+        ? path.basename(req.file.filename)
+        : condominium[0].main_filename;
+
+      if (req.file && condominium[0].main_filename) {
         const imagePath = path.join(
           process.cwd(),
           "public",
@@ -64,17 +68,22 @@ const handler = nc({
         }
       }
 
-      const updateCondominium = await query({
+      await query({
         query:
           "UPDATE `condominiums` SET `name` = ?,`main_description` = ?,`main_filename` = ?,`main_directory` = '/uploads/condominium/main/' WHERE `id` = ?",
         values: [name, main_description, filename, condominiumId],
+      });
+
+      const updateCondominium = await query({
+        query: "SELECT * FROM `condominiums` WHERE `id` = ?",
+        values: [condominiumId],
       });
 
       res.status(200).json({
         response: {
           status: "success",
           message: "Successfully updated.",
-          data: updateCondominium,
+          data: updateCondominium[0],
         },
       });
     } catch (error) {

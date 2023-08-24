@@ -2,12 +2,12 @@ import React from "react";
 import PropTypes from "prop-types";
 import {
   Alert,
+  ImageCard,
   InputText,
   Stepper,
   SubmitButton,
   TextArea,
 } from "@components/Admin";
-import axios from "axios";
 import { Dialog, Transition } from "@headlessui/react";
 import { alertDefaultData } from "../utils/constants";
 import {
@@ -52,26 +52,32 @@ const FormCondominium = (props) => {
     switch (activeStep) {
       case 0:
         valid =
-          formData.name && formData.main_description && formData.main_image;
+          formData.name &&
+          formData.main_description &&
+          (formData.main_image || formData.main_filename);
         break;
       case 1:
-        valid = formData.thumbnail_description && formData.thumbnail_image;
+        valid =
+          formData.thumbnail_description &&
+          (formData.thumbnail_image || formData.thumbnail_filename);
         break;
       case 2:
         valid =
           formData.amenities_description &&
           formData.amenities_list &&
-          formData.amenities_image;
+          (formData.amenities_image || formData.amenities_filename);
         break;
       case 3:
         valid =
-          formData.name && formData.main_description && formData.main_image;
+          formData.location_description &&
+          (formData.location_image || formData.location_filename) &&
+          formData.address;
         break;
       case 4:
         valid =
-          formData.location_description &&
-          formData.location_image &&
-          formData.address;
+          formData.amenities_description &&
+          formData.amenities_list &&
+          (formData.amenities_image || formData.amenities_filename);
         break;
     }
 
@@ -80,158 +86,120 @@ const FormCondominium = (props) => {
     return valid;
   };
 
-  const onClickHandlerSubmitAdd = async () => {
-    if (formValidation()) {
-      const newFormData = new FormData();
-      newFormData.append("name", formData.name);
-      newFormData.append("main_description", formData.main_description);
-      newFormData.append("main_image_file", formData.main_image_file);
-      newFormData.append(
-        "thumbnail_description",
-        formData.thumbnail_description
-      );
-      newFormData.append("thumbnail_image_file", formData.thumbnail_image_file);
-      newFormData.append(
-        "amenities_description",
-        formData.amenities_description
-      );
-      newFormData.append("amenities_description", formData.amenities_list);
-      newFormData.append("amenities_image_file", formData.amenities_image_file);
-      newFormData.append("location_description", formData.location_description);
-      newFormData.append("location_image_file", formData.location_image_file);
-      newFormData.append("address", formData.address);
-
-      const response = await axios.post("/api/condominiums", formData);
-      const data = response.data;
-      if (data.response.status === "success") {
-        const newCondominium = data.response.data;
-        props.onSubmitSuccessAddItem({
-          ...formData,
-          ...newCondominium,
-        });
-        setAlert({
-          message: data.response.message,
-          isShow: true,
-          status: "success",
-        });
-        setFormData({
-          name: "",
-          location: "",
-          payable_to: "",
-          description: "",
-        });
-      } else {
-        setAlert({
-          message: data.response.message,
-          isShow: true,
-          status: "error",
-        });
-      }
-    }
-  };
-
   const onClose = () => {
     setAlert(alertDefaultData);
     props.onCloseHandler();
   };
 
+  const processActiveStep = (activeStep) => {
+    const newFormData = new FormData();
+    newFormData.append("name", formData.name);
+    newFormData.append("main_description", formData.main_description);
+    formData.main_image_file &&
+      newFormData.append("main_image_file", formData.main_image_file);
+
+    if (!formData.id) {
+      postCondominiums(newFormData)
+        .then((data) => {
+          if (data.response.status === "success") {
+            const condominiumId = data.response.data.insertId;
+            setFormData((prevData) => {
+              return { ...prevData, id: condominiumId };
+            });
+            setActiveStep(activeStep + 1);
+          }
+        })
+        .catch(() => {
+          setAlert({ message: "Error on saving.", isShow: true });
+        });
+    } else {
+      patchCondominiums(formData.id, newFormData)
+        .then((data) => {
+          if (data.response.status === "success") {
+            setActiveStep(activeStep + 1);
+            setFormData((prevData) => {
+              return {
+                ...prevData,
+                main_directory: data.response.data.main_directory,
+                main_filename: data.response.data.main_filename,
+              };
+            });
+          }
+        })
+        .catch(() => {
+          setAlert({ message: "Error on saving.", isShow: true });
+        });
+    }
+  };
+
+  const processActiveStep1 = (activeStep) => {
+    const newFormData = new FormData();
+    newFormData.append("thumbnail_description", formData.thumbnail_description);
+    newFormData.append("thumbnail_image_file", formData.thumbnail_image_file);
+    patchCondominiumsStep2(formData.id, newFormData)
+      .then((data) => {
+        if (data.response.status === "success") {
+          setActiveStep(activeStep + 1);
+        }
+      })
+      .catch(() => {
+        setAlert({ message: "Error on saving.", isShow: true });
+      });
+  };
+
+  const processActiveStep2 = (activeStep) => {
+    const newFormData = new FormData();
+    newFormData.append("amenities_description", formData.amenities_description);
+    newFormData.append("amenities_list", formData.amenities_list);
+    newFormData.append("amenities_image_file", formData.amenities_image_file);
+    patchCondominiumsStep3(formData.id, newFormData)
+      .then((data) => {
+        if (data.response.status === "success") {
+          setActiveStep(activeStep + 1);
+        }
+      })
+      .catch(() => {
+        setAlert({ message: "Error on saving.", isShow: true });
+      });
+  };
+
+  const processActiveStep3 = (activeStep) => {
+    const newFormData = new FormData();
+    newFormData.append("location_description", formData.location_description);
+    newFormData.append("location_image_file", formData.location_image_file);
+    newFormData.append("address", formData.address);
+    patchCondominiumsStep4(formData.id, newFormData)
+      .then((data) => {
+        if (data.response.status === "success") {
+          setActiveStep(activeStep + 1);
+        }
+      })
+      .catch(() => {
+        setAlert({ message: "Error on saving.", isShow: true });
+      });
+  };
+
   const onClicHandlerNext = (activeStep) => {
     if (!formValidation(activeStep)) return;
-    setAlert(alertDefaultData);
-
-    const newFormData = new FormData();
     switch (activeStep) {
       case 0:
-        newFormData.append("name", formData.name);
-        newFormData.append("main_description", formData.main_description);
-        newFormData.append("main_image_file", formData.main_image_file);
-        if (!formData.id) {
-          postCondominiums(newFormData)
-            .then((data) => {
-              if (data.response.status === "success") {
-                const condominiumId = data.response.data.insertId;
-                setFormData((prevData) => {
-                  return { ...prevData, id: condominiumId };
-                });
-                setActiveStep(activeStep + 1);
-              }
-            })
-            .catch(() => {
-              setAlert({ message: "Error on saving.", isShow: true });
-            });
-        } else {
-          patchCondominiums(formData.id, newFormData)
-            .then((data) => {
-              if (data.response.status === "success") {
-                setActiveStep(activeStep + 1);
-              }
-            })
-            .catch(() => {
-              setAlert({ message: "Error on saving.", isShow: true });
-            });
-        }
+        processActiveStep(activeStep);
         break;
       case 1:
-        newFormData.append(
-          "thumbnail_description",
-          formData.thumbnail_description
-        );
-        newFormData.append(
-          "thumbnail_image_file",
-          formData.thumbnail_image_file
-        );
-        patchCondominiumsStep2(formData.id, newFormData)
-          .then((data) => {
-            if (data.response.status === "success") {
-              setActiveStep(activeStep + 1);
-            }
-          })
-          .catch(() => {
-            setAlert({ message: "Error on saving.", isShow: true });
-          });
+        processActiveStep1(activeStep);
         break;
       case 2:
-        newFormData.append(
-          "amenities_description",
-          formData.amenities_description
-        );
-        newFormData.append("amenities_list", formData.amenities_list);
-        newFormData.append(
-          "amenities_image_file",
-          formData.amenities_image_file
-        );
-        patchCondominiumsStep3(formData.id, newFormData)
-          .then((data) => {
-            if (data.response.status === "success") {
-              setActiveStep(activeStep + 1);
-            }
-          })
-          .catch(() => {
-            setAlert({ message: "Error on saving.", isShow: true });
-          });
+        processActiveStep2(activeStep);
         break;
       case 3:
-        newFormData.append(
-          "location_description",
-          formData.location_description
-        );
-        newFormData.append("location_image_file", formData.location_image_file);
-        newFormData.append("address", formData.address);
-        patchCondominiumsStep4(formData.id, newFormData)
-          .then((data) => {
-            if (data.response.status === "success") {
-              setActiveStep(activeStep + 1);
-            }
-          })
-          .catch(() => {
-            setAlert({ message: "Error on saving.", isShow: true });
-          });
+        processActiveStep3(activeStep);
         break;
     }
   };
 
   const onClicHandlerBack = (activeStep) => {
     setActiveStep(activeStep - 1);
+    setAlert(alertDefaultData);
   };
 
   const step1 = (
@@ -253,9 +221,17 @@ const FormCondominium = (props) => {
         label={"Main Image"}
         onChangeHandler={onChangeHandler}
         type={"file"}
-        value={formData.main_image_file.filename}
+        value={
+          formData.main_image_file ? formData.main_image_file.filename : ""
+        }
         imageFile={formData.main_image}
       />
+      {formData.main_directory && (
+        <ImageCard
+          source={`${formData.main_directory}${formData.main_filename}`}
+          rootStyle="flex justify-center py-2 w-5/12"
+        />
+      )}
     </React.Fragment>
   );
 
@@ -272,9 +248,19 @@ const FormCondominium = (props) => {
         label={"Thumbnail Image"}
         onChangeHandler={onChangeHandler}
         type={"file"}
-        value={formData.thumbnail_image_file.filename}
+        value={
+          formData.thumbnail_image_file
+            ? formData.thumbnail_image_file.filename
+            : ""
+        }
         imageFile={formData.thumbnail_image}
       />
+      {formData.thumbnail_directory && (
+        <ImageCard
+          source={`${formData.thumbnail_directory}${formData.thumbnail_filename}`}
+          rootStyle="flex justify-center py-2 w-5/12"
+        />
+      )}
     </React.Fragment>
   );
 
@@ -298,8 +284,18 @@ const FormCondominium = (props) => {
         onChangeHandler={onChangeHandler}
         type={"file"}
         imageFile={formData.amenities_image}
-        value={formData.amenities_image_file.filename}
+        value={
+          formData.amenities_image_file
+            ? formData.amenities_image_file.filename
+            : ""
+        }
       />
+      {formData.amenities_directory && (
+        <ImageCard
+          source={`${formData.amenities_directory}${formData.amenities_filename}`}
+          rootStyle="flex justify-center py-2 w-5/12"
+        />
+      )}
     </React.Fragment>
   );
 
@@ -317,8 +313,18 @@ const FormCondominium = (props) => {
         onChangeHandler={onChangeHandler}
         type={"file"}
         imageFile={formData.location_image}
-        value={formData.location_image_file.filename}
+        value={
+          formData.location_image_file
+            ? formData.location_image_file.filename
+            : ""
+        }
       />
+      {formData.location_directory && (
+        <ImageCard
+          source={`${formData.location_directory}${formData.location_filename}`}
+          rootStyle="flex justify-center py-2 w-5/12"
+        />
+      )}
       <TextArea
         name={"address"}
         label={"Address"}
@@ -354,7 +360,7 @@ const FormCondominium = (props) => {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-1/2">
                 <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <Stepper
                     steps={[
@@ -362,6 +368,7 @@ const FormCondominium = (props) => {
                       "Thumbnail",
                       "Amenities",
                       "Location",
+                      "Unit Types",
                     ]}
                     activeStep={activeStep}
                   />

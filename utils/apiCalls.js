@@ -20,6 +20,16 @@ export const getCondominiums = async () => {
   return response.data;
 };
 
+export const getAllCondominiums = async () => {
+  const response = await axios.get("/api/condominiums/all");
+  return response.data;
+};
+
+export const getCondominium = async (id) => {
+  const response = await axios.get(`/api/condominiums/${id}`);
+  return response.data;
+};
+
 export const postCondominiums = async (formData) => {
   const response = await axios.post("/api/condominiums", formData);
   return response.data;

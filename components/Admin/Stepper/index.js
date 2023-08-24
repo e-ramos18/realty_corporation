@@ -16,7 +16,7 @@ const Stepper = (props) => {
       <ol
         className={classNames(
           "grid text-sm font-medium text-gray-500",
-          `grid-cols-4`
+          `grid-cols-5`
         )}
       >
         {steps.map((item, index) => {
@@ -55,7 +55,7 @@ const Stepper = (props) => {
                   {index + 1}
                 </span>
               )}
-              <span className="hidden sm:block"> {item} </span>
+              <span className="hidden sm:block">{item}</span>
             </li>
           );
         })}
