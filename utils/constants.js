@@ -1,5 +1,4 @@
 export const condominiumTableHeader = [
-  { name: "id", label: "ID", style: "text-left" },
   { name: "name", label: "Name", style: "text-left" },
   { name: "address", label: "Address", style: "text-left" },
   { name: "main_description", label: "Description", style: "text-left" },

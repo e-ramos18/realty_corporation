@@ -33,12 +33,12 @@ const Hero = () => {
       {images.length &&
         images.map((image) => (
           <div
-            key={image.id}
+            key={image._id}
             className="relative flex items-center justify-center"
           >
             <img
               src={`${image.location}${image.filename}`}
-              alt={`Carousel Image ${image.id}`}
+              alt={`Carousel Image ${image._id}`}
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-black bg-opacity-50"></div>

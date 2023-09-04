@@ -21,11 +21,11 @@ const CardCarousel = (props) => {
     <React.Fragment>
       <div className="flex ml-4 mt-2 overflow-x-auto max-w-6xl">
         {props.data.map((item) => (
-          <div className="m-1" key={`key-${item.id}`}>
+          <div className="m-1" key={`key-${item._id}`}>
             <ImageCard
               source={`${item.location}${item.filename}`}
               hasDelete={true}
-              onClickHandlerDelete={() => onClickDeleteIcon(item.id)}
+              onClickHandlerDelete={() => onClickDeleteIcon(item._id)}
             />
           </div>
         ))}

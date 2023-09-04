@@ -1,7 +1,8 @@
 import multer from "multer";
 import path from "path";
 import nc from "next-connect";
-import { query } from "@config/db";
+import connectMongoDB from "@config/mongodb";
+import Condominium from "@models/condominium";
 
 export const config = {
   api: {
@@ -35,11 +36,13 @@ const handler = nc({
     const { name, main_description } = req.body;
     const filename = path.basename(req.file.filename);
     try {
-      const condominium = await query({
-        query:
-          "INSERT INTO `condominiums` (`name`,`main_description`,`main_filename`,`main_directory`,`statid`) " +
-          "VALUES (?,?,?,'/uploads/condominium/main/',6)",
-        values: [name, main_description, filename],
+      await connectMongoDB();
+      const condominium = await Condominium.create({
+        name: name,
+        main_description: main_description,
+        main_filename: filename,
+        main_directory: "/uploads/condominium/main/",
+        status: "pending",
       });
 
       res.status(200).json({
@@ -56,10 +59,8 @@ const handler = nc({
   })
   .get(async (req, res) => {
     try {
-      const condominiums = await query({
-        query: "SELECT * FROM `condominiums` WHERE `statid` = 1",
-        values: [],
-      });
+      await connectMongoDB();
+      const condominiums = await Condominium.find({ status: "complete" });
       res.status(200).json({
         response: {
           status: "success",

@@ -1,36 +1,29 @@
-import { query } from "@config/db";
 import path from "path";
 import fs from "fs";
+import connectMongoDB from "@config/mongodb";
+import Image from "@models/image";
 
 export default async function handler(req, res) {
   const { imageId } = req.query;
 
   if (req.method === "DELETE") {
     try {
-      const affectedRows = await query({
-        query: "UPDATE `images` SET `statid` = 2 WHERE `id` = ?",
-        values: [imageId],
-      });
+      await connectMongoDB();
+      const deletedRows = await Image.findByIdAndDelete(imageId);
 
-      if (affectedRows) {
-        const image = await query({
-          query: "SELECT * FROM `images` WHERE `id` = ?",
-          values: [imageId],
-        });
-
+      if (deletedRows) {
         const imagePath = path.join(
           process.cwd(),
           "public",
           "uploads",
           "hero",
-          image[0].filename
+          deletedRows.filename
         );
 
         res.status(200).json({
           response: {
             status: "success",
             message: "Successfully deleted.",
-            data: { id: imageId },
           },
         });
 
@@ -40,7 +33,7 @@ export default async function handler(req, res) {
           res.status(200).json({
             response: {
               status: "error",
-              message: `Error in deleting the file. ${imagePath} -`,
+              message: `Error in deleting the file.`,
             },
           });
         }

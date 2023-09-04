@@ -1,8 +1,9 @@
 import multer from "multer";
 import path from "path";
 import nc from "next-connect";
-import { query } from "@config/db";
 import fs from "fs";
+import connectMongoDB from "@config/mongodb";
+import Condominium from "@models/condominium";
 
 export const config = {
   api: {
@@ -36,23 +37,21 @@ const handler = nc({
     const { condominiumId } = req.query;
     const { amenities_description, amenities_list } = req.body;
     try {
-      const condominium = await query({
-        query: "SELECT * FROM `condominiums` WHERE `id` = ?",
-        values: [condominiumId],
-      });
+      await connectMongoDB();
+      const condominium = await Condominium.findById(condominiumId);
 
       const filename = req.file
         ? path.basename(req.file.filename)
-        : condominium[0].amenities_filename;
+        : condominium.amenities_filename;
 
-      if (req.file && condominium[0].amenities_filename) {
+      if (req.file && condominium.amenities_filename) {
         const imagePath = path.join(
           process.cwd(),
           "public",
           "uploads",
           "condominium",
           "amenities",
-          condominium[0].amenities_filename
+          condominium.amenities_filename
         );
 
         try {
@@ -61,38 +60,37 @@ const handler = nc({
           res.status(200).json({
             response: {
               status: "error",
-              message: `Error in deleting the file. ${imagePath} -`,
+              message: `Error in deleting the file.`,
             },
           });
         }
       }
 
-      await query({
-        query:
-          "UPDATE `condominiums` SET `amenities_description` = ?,`amenities_list` = ?,`amenities_filename` = ?,`amenities_directory` = '/uploads/condominium/amenities/' WHERE `id` = ?",
-        values: [
-          amenities_description,
-          amenities_list,
-          filename,
-          condominiumId,
-        ],
-      });
-
-      const updateCondominium = await query({
-        query: "SELECT * FROM `condominiums` WHERE `id` = ?",
-        values: [condominiumId],
-      });
+      const updatedCondiminium = await Condominium.findByIdAndUpdate(
+        condominiumId,
+        {
+          amenities_description: amenities_description,
+          amenities_list: amenities_list,
+          amenities_filename: filename,
+          amenities_directory: "/uploads/condominium/amenities/",
+        },
+        {
+          returnDocument: "after",
+        }
+      );
 
       res.status(200).json({
         response: {
           status: "success",
           message: "Successfully updated.",
-          data: updateCondominium[0],
+          data: updatedCondiminium,
         },
       });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: "Error creating data." });
+      res
+        .status(500)
+        .json({ status: "error", message: "Error creating data." });
     }
   });
 

@@ -81,7 +81,7 @@ const Dashboard = () => {
         }
       })
       .catch(() =>
-        setAlert({ message: "Error uploading image.", isShow: true })
+        setAlert({ message: "Error on deleting image.", isShow: true })
       );
   };
 

@@ -19,7 +19,6 @@ const Table = (props) => {
   const [isShowForm, setIsShowForm] = React.useState(false);
   const [isShowConfirmDialog, setIsShowConfirmDialog] = React.useState(false);
   const [selectedId, setSelectedId] = React.useState(null);
-  const [isFormEdit, setIsFormEdit] = React.useState(false);
   const [formData, setFormData] = React.useState(formDataCondominium);
 
   React.useEffect(() => {
@@ -37,27 +36,11 @@ const Table = (props) => {
   const onClickAdd = () => {
     setIsShowForm(true);
     setFormData(formDataCondominium);
-    setIsFormEdit(false);
   };
 
-  const onCloseHandler = () => {
+  const onCloseHandler = (formData) => {
+    setCurrentItems((prevCurrentItems) => [...prevCurrentItems, formData]);
     setIsShowForm(false);
-  };
-
-  const onSubmitSuccessAddItem = (addedItem) => {
-    setCurrentItems((prevItems) => {
-      prevItems.push(addedItem);
-      return prevItems;
-    });
-  };
-
-  const onSubmitSuccessSaveItem = (addedItem) => {
-    let updatedItems = [];
-    currentItems.forEach((item) => {
-      const newItem = item.id === addedItem.id ? addedItem : item;
-      updatedItems.push(newItem);
-    });
-    setCurrentItems(updatedItems);
   };
 
   const onClickHandleDeleteIcon = (id) => {
@@ -67,13 +50,19 @@ const Table = (props) => {
 
   const onClickHandleConfirmDelete = () => {
     props.onClickHandlerDelete(selectedId);
+    setCurrentItems((prevCurrentItems) => {
+      return prevCurrentItems.filter((item) => item._id !== selectedId);
+    });
+    setIsShowConfirmDialog(false);
+  };
+
+  const onClickSaveStep1 = (data) => {
     setIsShowConfirmDialog(false);
   };
 
   const onClickHandleEditIcon = (selectedItem) => {
-    setIsFormEdit(true);
-    getCondominium(selectedItem.id).then((data) => {
-      const condominium = data.response.data[0];
+    getCondominium(selectedItem._id).then((data) => {
+      const condominium = data.response.data;
       setFormData(condominium);
     });
     setIsShowForm(true);
@@ -106,13 +95,15 @@ const Table = (props) => {
             {currentItems.map((currentItem) => {
               return (
                 <tr
-                  key={currentItem.id}
-                  className={currentItem.statid === 6 && "bg-red-200"}
+                  key={currentItem._id}
+                  className={
+                    currentItem.status === "pending" ? "bg-red-200" : ""
+                  }
                 >
                   {header.map((item) => {
                     return (
                       <td
-                        key={`key-${currentItem.id}-${item.name}`}
+                        key={`key-${currentItem._id}-${item.name}`}
                         className={`px-2 py-2 text-xs text-gray-500 align-top ${item.style}`}
                       >
                         {currentItem[item.name]}
@@ -124,7 +115,7 @@ const Table = (props) => {
                       <div className="flex justify-center">
                         <IconButton
                           Icon={PencilSquareIcon}
-                          name={`edit-${currentItem.id}`}
+                          name={`edit-${currentItem._id}`}
                           onClickHandler={() =>
                             onClickHandleEditIcon(currentItem)
                           }
@@ -133,9 +124,9 @@ const Table = (props) => {
                         />
                         <IconButton
                           Icon={XCircleIcon}
-                          name={`delete-${currentItem.id}`}
+                          name={`delete-${currentItem._id}`}
                           onClickHandler={() =>
-                            onClickHandleDeleteIcon(currentItem.id)
+                            onClickHandleDeleteIcon(currentItem._id)
                           }
                           tooltip="Delete"
                           iconStyle="text-primary-error"
@@ -177,10 +168,8 @@ const Table = (props) => {
       <FormCondominium
         open={isShowForm}
         onCloseHandler={onCloseHandler}
-        onSubmitSuccessAddItem={onSubmitSuccessAddItem}
-        onSubmitSuccessSaveItem={onSubmitSuccessSaveItem}
-        isFormEdit={isFormEdit}
         formData={formData}
+        onClickSaveStep1={onClickSaveStep1}
       />
       <ConfirmDialogBox
         title={"Delete Item"}

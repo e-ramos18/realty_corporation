@@ -86,9 +86,9 @@ const FormCondominium = (props) => {
     return valid;
   };
 
-  const onClose = () => {
+  const onClose = (formData) => {
     setAlert(alertDefaultData);
-    props.onCloseHandler();
+    props.onCloseHandler(formData);
   };
 
   const processActiveStep = (activeStep) => {
@@ -98,14 +98,17 @@ const FormCondominium = (props) => {
     formData.main_image_file &&
       newFormData.append("main_image_file", formData.main_image_file);
 
-    if (!formData.id) {
+    if (!formData._id) {
       postCondominiums(newFormData)
         .then((data) => {
           if (data.response.status === "success") {
-            const condominiumId = data.response.data.insertId;
-            setFormData((prevData) => {
-              return { ...prevData, id: condominiumId };
-            });
+            setFormData((prevData) => ({
+              ...prevData,
+              _id: data.response.data._id,
+              status: "pending",
+              main_directory: data.response.data.main_directory,
+              main_filename: data.response.data.main_filename,
+            }));
             setActiveStep(activeStep + 1);
           }
         })
@@ -113,7 +116,7 @@ const FormCondominium = (props) => {
           setAlert({ message: "Error on saving.", isShow: true });
         });
     } else {
-      patchCondominiums(formData.id, newFormData)
+      patchCondominiums(formData._id, newFormData)
         .then((data) => {
           if (data.response.status === "success") {
             setActiveStep(activeStep + 1);
@@ -136,10 +139,17 @@ const FormCondominium = (props) => {
     const newFormData = new FormData();
     newFormData.append("thumbnail_description", formData.thumbnail_description);
     newFormData.append("thumbnail_image_file", formData.thumbnail_image_file);
-    patchCondominiumsStep2(formData.id, newFormData)
+    patchCondominiumsStep2(formData._id, newFormData)
       .then((data) => {
         if (data.response.status === "success") {
           setActiveStep(activeStep + 1);
+          setFormData((prevData) => {
+            return {
+              ...prevData,
+              thumbnail_directory: data.response.data.thumbnail_directory,
+              thumbnail_filename: data.response.data.thumbnail_filename,
+            };
+          });
         }
       })
       .catch(() => {
@@ -152,10 +162,17 @@ const FormCondominium = (props) => {
     newFormData.append("amenities_description", formData.amenities_description);
     newFormData.append("amenities_list", formData.amenities_list);
     newFormData.append("amenities_image_file", formData.amenities_image_file);
-    patchCondominiumsStep3(formData.id, newFormData)
+    patchCondominiumsStep3(formData._id, newFormData)
       .then((data) => {
         if (data.response.status === "success") {
           setActiveStep(activeStep + 1);
+          setFormData((prevData) => {
+            return {
+              ...prevData,
+              amenities_directory: data.response.data.amenities_directory,
+              amenities_filename: data.response.data.amenities_filename,
+            };
+          });
         }
       })
       .catch(() => {
@@ -168,10 +185,17 @@ const FormCondominium = (props) => {
     newFormData.append("location_description", formData.location_description);
     newFormData.append("location_image_file", formData.location_image_file);
     newFormData.append("address", formData.address);
-    patchCondominiumsStep4(formData.id, newFormData)
+    patchCondominiumsStep4(formData._id, newFormData)
       .then((data) => {
         if (data.response.status === "success") {
           setActiveStep(activeStep + 1);
+          setFormData((prevData) => {
+            return {
+              ...prevData,
+              location_directory: data.response.data.location_directory,
+              location_filename: data.response.data.location_filename,
+            };
+          });
         }
       })
       .catch(() => {
@@ -221,9 +245,6 @@ const FormCondominium = (props) => {
         label={"Main Image"}
         onChangeHandler={onChangeHandler}
         type={"file"}
-        value={
-          formData.main_image_file ? formData.main_image_file.filename : ""
-        }
         imageFile={formData.main_image}
       />
       {formData.main_directory && (
@@ -248,11 +269,6 @@ const FormCondominium = (props) => {
         label={"Thumbnail Image"}
         onChangeHandler={onChangeHandler}
         type={"file"}
-        value={
-          formData.thumbnail_image_file
-            ? formData.thumbnail_image_file.filename
-            : ""
-        }
         imageFile={formData.thumbnail_image}
       />
       {formData.thumbnail_directory && (
@@ -284,11 +300,6 @@ const FormCondominium = (props) => {
         onChangeHandler={onChangeHandler}
         type={"file"}
         imageFile={formData.amenities_image}
-        value={
-          formData.amenities_image_file
-            ? formData.amenities_image_file.filename
-            : ""
-        }
       />
       {formData.amenities_directory && (
         <ImageCard
@@ -313,11 +324,6 @@ const FormCondominium = (props) => {
         onChangeHandler={onChangeHandler}
         type={"file"}
         imageFile={formData.location_image}
-        value={
-          formData.location_image_file
-            ? formData.location_image_file.filename
-            : ""
-        }
       />
       {formData.location_directory && (
         <ImageCard
@@ -336,7 +342,11 @@ const FormCondominium = (props) => {
 
   return (
     <Transition.Root show={props.open} as={React.Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
+      <Dialog
+        as="div"
+        className="relative z-10"
+        onClose={() => onClose(formData)}
+      >
         <Transition.Child
           as={React.Fragment}
           enter="ease-out duration-300"
@@ -407,13 +417,10 @@ const FormCondominium = (props) => {
 };
 
 FormCondominium.propTypes = {
-  onClickHandlerSubmit: PropTypes.func,
   open: PropTypes.bool.isRequired,
   onCloseHandler: PropTypes.func.isRequired,
-  onSubmitSuccessAddItem: PropTypes.func,
-  onSubmitSuccessSaveItem: PropTypes.func,
-  isFormEdit: PropTypes.bool,
   formData: PropTypes.object,
+  onClickSaveStep1: PropTypes.func,
 };
 
 export default FormCondominium;

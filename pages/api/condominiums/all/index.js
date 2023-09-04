@@ -1,11 +1,10 @@
-import { query } from "@config/db";
+import connectMongoDB from "@config/mongodb";
+import Condominium from "@models/condominium";
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
-    const condominiums = await query({
-      query: "SELECT * FROM `condominiums` WHERE `statid` in (1,6)",
-      values: [],
-    });
+    await connectMongoDB();
+    const condominiums = await Condominium.find();
 
     if (condominiums.length > 0) {
       res.status(200).json({
@@ -17,7 +16,7 @@ export default async function handler(req, res) {
       });
     } else {
       res.status(200).json({
-        response: { status: "invalid", message: "Invalid details." },
+        response: { status: "invalid", message: "Invalid details.", data: [] },
       });
     }
   }

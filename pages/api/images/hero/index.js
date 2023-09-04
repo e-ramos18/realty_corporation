@@ -1,7 +1,8 @@
 import multer from "multer";
 import path from "path";
 import nc from "next-connect";
-import { query } from "@config/db";
+import connectMongoDB from "@config/mongodb";
+import Image from "@models/image";
 
 export const config = {
   api: {
@@ -33,10 +34,11 @@ const handler = nc({
   .post(async (req, res) => {
     const filename = dateNow + "-" + path.basename(req.file.originalname);
     try {
-      const heroImage = await query({
-        query:
-          "INSERT INTO `images` (`directory`,`directoryId`,`location`,`filename`) VALUES ('hero',1,'/uploads/hero/',?)",
-        values: [filename],
+      await connectMongoDB();
+      const heroImage = await Image.create({
+        directory: "hero",
+        location: "/uploads/hero/",
+        filename: filename,
       });
 
       res.status(200).json({
@@ -52,11 +54,8 @@ const handler = nc({
   })
   .get(async (req, res) => {
     try {
-      const heroImages = await query({
-        query:
-          "SELECT * FROM `images` WHERE `directory` = 'hero' AND `statid` = 1",
-        values: [],
-      });
+      await connectMongoDB();
+      const heroImages = await Image.find({ directory: "hero" });
       res.status(200).json({
         response: {
           status: "success",

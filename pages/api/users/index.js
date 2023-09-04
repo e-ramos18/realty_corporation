@@ -1,14 +1,17 @@
-import { query } from "@config/db";
+import connectMongoDB from "@config/mongodb";
+import User from "@models/user";
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
-    const users = await query({
-      query: "SELECT * FROM `users` WHERE `statid` = 1",
-      values: [],
-    });
+    await connectMongoDB();
+    const user = await User.find();
 
     res.status(200).json({
-      response: { status: "success", users: users },
+      response: { status: "success", data: user },
+    });
+  } else {
+    res.status(405).json({
+      response: { status: "error", message: "Error System Method" },
     });
   }
 }

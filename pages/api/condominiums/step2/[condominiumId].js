@@ -1,8 +1,9 @@
 import multer from "multer";
 import path from "path";
 import nc from "next-connect";
-import { query } from "@config/db";
 import fs from "fs";
+import connectMongoDB from "@config/mongodb";
+import Condominium from "@models/condominium";
 
 export const config = {
   api: {
@@ -37,23 +38,21 @@ const handler = nc({
     const { thumbnail_description } = req.body;
 
     try {
-      const condominium = await query({
-        query: "SELECT * FROM `condominiums` WHERE `id` = ?",
-        values: [condominiumId],
-      });
+      await connectMongoDB();
+      const condominium = await Condominium.findById(condominiumId);
 
       const filename = req.file
         ? path.basename(req.file.filename)
-        : condominium[0].thumbnail_filename;
+        : condominium.thumbnail_filename;
 
-      if (req.file && condominium[0].thumbnail_filename) {
+      if (req.file && condominium.thumbnail_filename) {
         const imagePath = path.join(
           process.cwd(),
           "public",
           "uploads",
           "condominium",
           "thumbnail",
-          condominium[0].thumbnail_filename
+          condominium.thumbnail_filename
         );
 
         try {
@@ -62,33 +61,36 @@ const handler = nc({
           res.status(200).json({
             response: {
               status: "error",
-              message: `Error in deleting the file. ${imagePath} -`,
+              message: `Error in deleting the file.`,
             },
           });
         }
       }
 
-      await query({
-        query:
-          "UPDATE `condominiums` SET `thumbnail_description` = ?,`thumbnail_filename` = ?,`thumbnail_directory` = '/uploads/condominium/thumbnail/' WHERE `id` = ?",
-        values: [thumbnail_description, filename, condominiumId],
-      });
-
-      const updateCondominium = await query({
-        query: "SELECT * FROM `condominiums` WHERE `id` = ?",
-        values: [condominiumId],
-      });
+      const updatedCondiminium = await Condominium.findByIdAndUpdate(
+        condominiumId,
+        {
+          thumbnail_description: thumbnail_description,
+          thumbnail_filename: filename,
+          thumbnail_directory: "/uploads/condominium/thumbnail/",
+        },
+        {
+          returnDocument: "after",
+        }
+      );
 
       res.status(200).json({
         response: {
           status: "success",
           message: "Successfully updated.",
-          data: updateCondominium[0],
+          data: updatedCondiminium,
         },
       });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: "Error creating data." });
+      res
+        .status(500)
+        .json({ status: "error", message: "Error creating data." });
     }
   });
 
