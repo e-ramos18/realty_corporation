@@ -48,7 +48,7 @@ export default function Login() {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <InputText
             name={"uname"}
-            label={"Username"}
+            label={"Username Test"}
             onChangeHandler={onChangeHandler}
           />
           <InputText
